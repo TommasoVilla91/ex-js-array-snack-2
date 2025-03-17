@@ -71,3 +71,31 @@ const agesSum = ages.reduce((acc, a) => {
 }, 0);
 console.log('Avg-age:', (agesSum / ages.length));
 
+////// SNACK 5
+async function fetchJson(url) {
+    const response = await fetch(url);
+    const obj = await response.json();
+    return obj; 
+}
+
+async function getBooks(ids) {
+    try {
+        const fetches = ids.map(id => fetchJson(`https://boolean-spec-frontend.vercel.app/freetestapi/books/${id}`));        
+        const books = await Promise.all(fetches);    
+        return books;
+
+    } catch(error) {
+        throw new Error(`Non riesco a recuperare i libri! ${error.message}`)
+    };
+};
+
+(async() => {
+    try {
+        const books = await getBooks([2, 13, 7, 21, 19]);
+        console.log(books);
+    } catch(error) {
+        console.error(error);
+    };   
+})();
+
+////// SNACK 6
