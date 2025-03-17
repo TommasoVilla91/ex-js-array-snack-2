@@ -47,12 +47,23 @@ const books = [
 
 ////// SNACK 1
 const longBooks = books.filter(book => book.pages >= 300);
-const longBooksTitles = longBooks.forEach(book => console.log(book.title));
+const longBooksTitles = longBooks.map(book => book.title);
+longBooksTitles.forEach(title => console.log(title));
 
-////// SNACK 2
-const availableBooks = books.filter(book => book.available === true);
-const discountedBooks = availableBooks.map(book => parseInt(book.price) * 0.2);
-const fullPricedBook = (Math.round(discountedBooks[0] * 2) / 2)
+////// SNACK 2 (corretto il calcolo prezzo nel map)
+const availableBooks = books.filter(book => book.available);
+const discountedBooks = availableBooks.map(book => {
+    const price = parseFloat(book.price.replace('€', ''));
+    const discountedPrice = (price * 0.8).toFixed(2);
+    return {
+        ...book,
+        price: `${discountedPrice}€`
+    }
+});
+const fullPricedBook = discountedBooks.find(book => {
+    const price = parseFloat(book.price.replace('€', ''));
+    return price % 1 === 0;
+})
 console.log(fullPricedBook);
 
 ////// SNACK 3
@@ -72,30 +83,51 @@ const agesSum = ages.reduce((acc, a) => {
 console.log('Avg-age:', (agesSum / ages.length));
 
 ////// SNACK 5
-async function fetchJson(url) {
-    const response = await fetch(url);
-    const obj = await response.json();
-    return obj; 
-}
+// async function fetchJson(url) {
+//     const response = await fetch(url);
+//     const obj = await response.json();
+//     return obj; 
+// }
 
-async function getBooks(ids) {
-    try {
-        const fetches = ids.map(id => fetchJson(`https://boolean-spec-frontend.vercel.app/freetestapi/books/${id}`));        
-        const books = await Promise.all(fetches);    
-        return books;
+// async function getBooks(ids) {
+//     try {
+//         const fetches = ids.map(id => fetchJson(`https://boolean-spec-frontend.vercel.app/freetestapi/books/${id}`));        
+//         const books = await Promise.all(fetches);    
+//         return books;
 
-    } catch(error) {
-        throw new Error(`Non riesco a recuperare i libri! ${error.message}`)
-    };
-};
+//     } catch(error) {
+//         throw new Error(`Non riesco a recuperare i libri! ${error.message}`)
+//     };
+// };
 
-(async() => {
-    try {
-        const books = await getBooks([2, 13, 7, 21, 19]);
-        console.log(books);
-    } catch(error) {
-        console.error(error);
-    };   
-})();
+// (async() => {
+//     try {
+//         const books = await getBooks([2, 13, 7, 21, 19]);
+//         console.log(books);
+//     } catch(error) {
+//         console.error(error);
+//     };   
+// })();
 
-////// SNACK 6
+////// SNACK 6 (finale svolto guardando correzione)
+const areThereAvailableBooks = books.some(book => book.available);
+const booksByPrice = [...books].sort((a, b) => {
+    const price1 = parseFloat(a.price.replace('€', ''));
+    const price2 = parseFloat(b.price.replace('€', ''));
+    return price1 - price2;
+});
+booksByPrice.sort((a, b) => a.available ? -1 : 1);
+console.log(booksByPrice);
+
+////// SNACK 7 (svolto guardando correzione)
+const tagCounts = books.reduce((acc, b) => {
+    b.tags.forEach(tag => {
+        if(acc[tag]) {
+            acc[tag] ++;
+        } else {
+            acc[tag] = 1;
+        };
+    });
+    return acc;
+}, {});
+console.log(tagCounts);
